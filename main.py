@@ -4,19 +4,12 @@ import random
 class Card:
     def __init__(self):
         self.type = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
-
         self.cards = [[suite + num for num in self.type] for suite in ["♥", "♠", "♦", "♣"]]
         self.gameCards = self.cards.copy()
-        self.v = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
     def draw(self):
         suite = random.choice(self.gameCards)
         num = random.choice(suite)
-        # # Print hearts and diamonds red in the terminal
-        # if num[0] == "♦" or num[0] == "♥":
-        #     print(f"\033[1;31m{num[0]}\033[0;0m{num[1]}")
-        # else:
-        #     print(num)
         suite.remove(num)
         # if the suite is empty, remove the suite from potential cards to pull
         if not suite:
@@ -35,6 +28,7 @@ class Card:
         return card
 
     def handValue(self, hand):
+        # Take the value of the 2nd character in the string.  1st character is the suite
         return sum([int(self.cardValue(i[1:])) for i in hand])
 
 card = Card()
@@ -43,72 +37,94 @@ card = Card()
 class Main:
     def __init__(self):
         self.bust = False
-        self.v = card.handValue(player.hand)
+        self.printData()
 
-    def hit(self):
+    def hit(self, person):
         c = card.draw()
-        (player.hand).append(card.cardValue(c))
+        (person.hand).append(card.cardValue(c))
 
-    def event(self):
-        v = card.handValue(player.hand)
-        if v == 21:
+    def stand(self):
+        pass
+
+    def printData(self):
+        if dealer.reveal:
+            print("DEALER HAND:", dealer.hand)
+        else:
+            print("DEALER HAND:", dealer.hand[0])
+        print("PLAYER HAND:",player.hand)
+
+    def compare(self):
+        self.printData()
+        v1 = player.value
+        v2 = dealer.value
+
+        # Push
+        if v1 == v2:
+            print("PUSH")
+
+        # Winner
+        if v1 == 21 or v1 < v2:
+            print("PLAYER WINS")
+        elif v2 == 21 or v2 < v1:
+            print("DEALER WINS")
+
+    def event(self, pValue, dValue):
+        v1 = dealer.value
+        v2  = player.value
+
+        if v1 == 21:
             print(card.handValue(player.hand), player.hand)
             print("\u001b[32mBLACK JACK\033[0;0m")
-        elif v > 21:
+
+        elif v1 or v2 > 21:
+            print(dealer.hand)
             print(card.handValue(player.hand), player.hand)
             print("\033[1;31mBUST\033[0;0m")
         else:
+            self.printData()
             self.loop()
 
-    def gameRound(self):
-        pass
-
-
     def loop(self):
-        print(card.handValue(player.hand), player.hand)
-        x = input("\n"
-                  "HIT: [h]  STAND: [s]\n")
+        print("PLAYER:\n", player.hand)
+
+        x = input("\nHIT: [h]  STAND: [s]\n")
         if x == "h":
-            self.hit()
+            self.hit(player)
         elif x == "s":
-            pass
-        self.event()
+            dealer.logic()
+            dealer.reveal = True
+        self.compare()
+
 
 class User:
     def __init__(self, name):
         self.name = name
+        self.hand = [card.draw(), card.draw()]  # list of strings
+        self.value = card.handValue(self.hand)  # int
+
+
+class Dealer (Card):
+    def __init__(self):
+        super(Card).__init__()
         self.hand = [card.draw(), card.draw()]
         self.value = card.handValue(self.hand)
+        self.reveal = False
 
-    def main(self):
-        print()
+    def logic(self):
+        card.cardValue(card.draw())
 
-    # if the player decides to hit and their score is 10 or under:
-    #       set the value of the ace to 11
+        if self.value >= 17:
+            pass
+        else:
+            while self.value < 17:
+                # TO DO: if the dealer has an ace and counting it as 11 brings the total to 17 - 21, dealer must hit
+                m.hit(dealer)
+                self.value = card.handValue(self.hand)
 
 player = User("Player")
+dealer = Dealer()
+
 m = Main()
-# player = User("Player")
 m.loop()
 
 
-class Dealer(Main):
-    def __init__(self):
-        self.hand = 0
-
-    def draw(self):
-        ace = random.choice([1,11])
-        values = [ace,ace,ace,ace,2,3,4,5,6,7,8,9,10,10,10,10]
-        y = random.choice(values)
-        print(y)
-        return y
-
-    def logic(self):
-        card = self.draw()
-        # stand if total is 17 or more
-        # if total under 16, keep hitting until 17 or more
-        # if the dealer has an ace and counting it as 11 brings the total from 17 to 21, dealer must hit
-        pass
-
-d = Dealer()
-d.draw()
