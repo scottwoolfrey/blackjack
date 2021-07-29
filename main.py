@@ -5,6 +5,7 @@ from random import choice
 class Card:
     def __init__(self):
         self.type = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+        self.type = ["A", "A", "A", "A", "A", "A", "A", "A", "9", "10", "J", "Q", "K"]  # TESTING ACES **DELETE AFTER"
         self.cards = [[suite + num for num in self.type] for suite in ["♥", "♠", "♦", "♣"]]
         self.gameCards = self.cards.copy()
 
@@ -17,23 +18,6 @@ class Card:
             self.gameCards.remove(suite)
         return num
 
-    def cardValue(self, card):
-        # Convert monkey cards to 10
-        if card == "A":
-            print(player.value)
-        if card == "K" or card == "Q" or card == "J" or card == "A":
-            # Automatically turn a soft ace into a hard ace
-            # if card == "A" and currentHandValue[0] < 10:
-            #     card = "11"
-            # else:
-            #     card = "1"
-            card = "10"
-        return card
-
-    def handValue(self, hand):
-        # Take the value of the 2nd character in the string.  1st character is the suite
-        return sum([int(self.cardValue(i[1:])) for i in hand])
-
 
 class Main:
     def __init__(self):
@@ -41,7 +25,7 @@ class Main:
 
     def hit(self, person):
         c = card.draw()
-        (person.hand).append(card.cardValue(c))
+        (person.hand).append(person.cardValue(c))
 
     def printData(self):
         if dealer.reveal:
@@ -57,22 +41,23 @@ class Main:
         print(winner.win)
         exit()
 
-
     def compare(self, action):
         self.printData()
-        pValue = card.handValue(player.hand)
-        dValue = card.handValue(dealer.hand)
+        pValue = player.handValue(player.hand)
+        dValue = dealer.handValue(dealer.hand)
 
         # Black Jack
-        if pValue == 21 and len(player.hand) == 2:
+        if pValue == 21 and len(player.hand) % 2 == 0:
             self.printWinningDetails("BLACK JACK", player)
-        elif dValue == 21 and len(dealer.hand) == 2:
+        else:
             self.printWinningDetails("BLACK JACK", dealer)
+
         # Bust
         if pValue > 21:
-            self.printWinningDetails("BUST", player)
-        elif dValue > 21:
             self.printWinningDetails("BUST", dealer)
+        elif dValue > 21:
+            self.printWinningDetails("BUST", player)
+
         # Max Hand Value
         elif pValue == 21:
             self.printWinningDetails("", player)
@@ -83,12 +68,12 @@ class Main:
             # Push
             if pValue == dValue:
                 self.printWinningDetails("PUSH", player)
+
             # Higher Hand Value
             if pValue > dValue:
                 self.printWinningDetails("", player)
             elif dValue > pValue:
                 self.printWinningDetails("", dealer)
-
         self.loop()
 
     def loop(self):
@@ -99,50 +84,47 @@ class Main:
             self.loop()
         elif x == "s":
             dealer.reveal = True
-            dealer.logic()
+            dealer.dealerlogic()
             self.compare(x)
             self.printData()
 
 
-class User:
+class User (Card):
     def __init__(self, name):
+        super(Card).__init__()
         self.name = name
-        self.win = "======== PLAYER WINS ========"
+        self.win = f"======== {self.name} WINS ========"
         self.hand = [card.draw(), card.draw()]  # list of strings
-        self.value = card.handValue(self.hand)  # int
+        self.value = self.handValue(self.hand)  # int
         self.balance = 1000
+        self.reveal = False
 
     def dealerlogic(self):
         if self.value < 17:
             while self.value < 17:
                 # TO DO: if the dealer has an ace and counting it as 11 brings the total to 17 - 21, dealer must hit
                 m.hit(dealer)
-                self.value = card.handValue(self.hand)
+                self.value = self.handValue(self.hand)
         else:
             pass
-class Dealer (Card):
-    def __init__(self):
-        super(Card).__init__()
-        self.win = "======== DEALER WINS ========"
-        self.hand = [card.draw(), card.draw()]
-        self.value = card.handValue(self.hand)
-        self.reveal = False
 
-    def logic(self):
-        if self.value < 17:
-            while self.value < 17:
-                # TO DO: if the dealer has an ace and counting it as 11 brings the total to 17 - 21, dealer must hit
-                m.hit(dealer)
-                self.value = card.handValue(self.hand)
-        else:
-            pass
+    def handValue(self, hand):
+        # Take the value of the 2nd character in the string.  1st character is the suite
+        return sum([int(self.cardValue(i[1:])) for i in hand])
+
+    def cardValue(self, card):
+        # Convert monkey cards to 10
+        if card == "A":
+            print(self.value)
+        if card == "K" or card == "Q" or card == "J" or card == "A":
+            card = "10"
+        return card
+
 card = Card()
-print(card.cards)
 player = User("Player")
-# dealer = User("Dealer")
-dealer = Dealer()
+dealer = User("Dealer")
+# dealer = Dealer()
 m = Main()
-
 m.loop()
 
 # COlOR OUTPUT
