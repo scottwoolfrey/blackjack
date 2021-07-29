@@ -19,6 +19,8 @@ class Card:
 
     def cardValue(self, card):
         # Convert monkey cards to 10
+        if card == "A":
+            print(player.value)
         if card == "K" or card == "Q" or card == "J" or card == "A":
             # Automatically turn a soft ace into a hard ace
             # if card == "A" and currentHandValue[0] < 10:
@@ -31,8 +33,6 @@ class Card:
     def handValue(self, hand):
         # Take the value of the 2nd character in the string.  1st character is the suite
         return sum([int(self.cardValue(i[1:])) for i in hand])
-
-card = Card()
 
 
 class Main:
@@ -112,7 +112,14 @@ class User:
         self.value = card.handValue(self.hand)  # int
         self.balance = 1000
 
-
+    def dealerlogic(self):
+        if self.value < 17:
+            while self.value < 17:
+                # TO DO: if the dealer has an ace and counting it as 11 brings the total to 17 - 21, dealer must hit
+                m.hit(dealer)
+                self.value = card.handValue(self.hand)
+        else:
+            pass
 class Dealer (Card):
     def __init__(self):
         super(Card).__init__()
@@ -129,10 +136,13 @@ class Dealer (Card):
                 self.value = card.handValue(self.hand)
         else:
             pass
+card = Card()
+print(card.cards)
 player = User("Player")
+# dealer = User("Dealer")
 dealer = Dealer()
-
 m = Main()
+
 m.loop()
 
 # COlOR OUTPUT
