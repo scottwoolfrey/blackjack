@@ -5,7 +5,7 @@ from random import choice
 class Card:
     def __init__(self):
         self.type = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
-        self.type = ["A", "A", "A", "A", "A", "A", "A", "A", "9", "10", "J", "Q", "K"]  # TESTING ACES **DELETE AFTER"
+        # self.type = ["A", "A", "A", "A", "A", "A", "A", "A", "9", "10", "J", "Q", "K"]  # TESTING ACES **DELETE AFTER"
         self.cards = [[suite + num for num in self.type] for suite in ["♥", "♠", "♦", "♣"]]
         self.gameCards = self.cards.copy()
 
@@ -47,7 +47,7 @@ class Main:
         dValue = dealer.handValue(dealer.hand)
 
         # Black Jack
-        if pValue == 21 and len(player.hand) % 2 == 0:
+        if pValue == 21 and len(player.hand) == 2:
             self.printWinningDetails("BLACK JACK", player)
         else:
             self.printWinningDetails("BLACK JACK", dealer)
@@ -94,7 +94,8 @@ class User (Card):
         super(Card).__init__()
         self.name = name
         self.win = f"======== {self.name} WINS ========"
-        self.hand = [card.draw(), card.draw()]  # list of strings
+        self.hand = [card.draw(), card.draw()] # list of strings
+        self.value = 0
         self.value = self.handValue(self.hand)  # int
         self.balance = 1000
         self.reveal = False
@@ -113,17 +114,21 @@ class User (Card):
         return sum([int(self.cardValue(i[1:])) for i in hand])
 
     def cardValue(self, card):
-        # Convert monkey cards to 10
+        # Convert face cards to 10
         if card == "A":
+            if self.value >= 11:
+                card = "1"
+            else:
+                card = "11"
             print(self.value)
-        if card == "K" or card == "Q" or card == "J" or card == "A":
+
+        if card == "K" or card == "Q" or card == "J":
             card = "10"
         return card
 
 card = Card()
 player = User("Player")
 dealer = User("Dealer")
-# dealer = Dealer()
 m = Main()
 m.loop()
 
