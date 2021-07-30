@@ -1,23 +1,31 @@
-# import pygame
-# screen_w = 1025
-# screen_h = 512
-# screen = screen_w, screen_h
-# map = pygame.image.load("Blackjack map.png")
-# while True:
-#     pygame.init()
-#     myDisplay = pygame.display.set_mode(screen)
-#     empty_surface = pygame.Surface(screen)
-#     pygame.display.update()
-
 import pygame
+from main import User, Card, Main
+
 bg = pygame.image.load("Blackjack map.png")
-pygame.transform.smoothscale(bg, (916,512))
+cardload = pygame.image.load("card.png")
+card = pygame.transform.scale(cardload, (100,150))
+
+white = (255, 255, 255)
+hitWhite = (242, 242, 242)
+black = (0, 0, 0)
+hitBlack = (128, 128, 128)
+pygame.font.init()
+font = pygame.font.SysFont("ariel", 20)
+text = font.render(f'', True, black)
+
 while True:
-    clock = pygame.time.Clock()
     screen = pygame.display.set_mode((916,512))
+    screen_w = screen.get_width()
+    screen_h = screen.get_height()
     screen.blit(bg, (0,0))
-    pygame.transform.scale(bg, (916,512))
+    screen.blit(card, (100, 50))
+    screen.blit(text, (100, 50))
     pygame.display.update()
+# card = Card()
+# player = User("Player")
+# dealer = User("Dealer")
+# m = Main()
+# m.loop()
 
 
 
